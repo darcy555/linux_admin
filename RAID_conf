@@ -1,0 +1,51 @@
+1. fdisk -l
+2. fdisk /dev/sda
+m : get help
+p : print all information about
+partition
+n : create new partition
+e : extends
+p : primary partion(1-4)
+l : logical partions
+t : used to change Partition type
+hex_code: 8e, fd
+w : write and quit
+partprobe
+reboot or init 6
+2. Creating Pysical volume
+pvcreate /dev/sda5 /dev/sda6 /dev/sda7
+pvdisplay : just for displaying
+3. create groupe volume
+vgcreate /dev/vg0 /dev/sda5 /dev/sda6 /dev/sda7
+4. Create Logic volume lv1, lv2
+lvcreate -L 5000m -n /dev/vg0/lv1
+lvcreate -L 5000m -n /dev/vg0/lv2
+// checking file
+e2fsck /dev/vg0/lv1
+//change file system
+mkfs.ext4 /dev/vg0/lv1
+mount /dev/vg0/lv1 /myData // for justing mounting
+umount /dev/vg0/lv1
+>> Extending & Reducing
+lvextend -L +2000m /dev/vg0/lv1
+1. Create Raid1
+mdadm -C /dev/md0 -a yes -l 1 -n 2 /dev/sda8 /dev/sd9
+cat /proc/mdstart
+mkfs.ext3 /dev/md0
+mount /dev/md0 /mtn
+mdadm /dev/md0 -f /dev/sda8
+mdadm /dev/md0 -r /dev/sda8
+mdadm /dev/md0 -a /dev/sda9
+2. Create Raid5
+/dev/sda11 +2000M
+/dev/sda12 +2000M
+/dev/sda13 +2000M
+/dev/sda14 +2000M
+changing partiton type: t
+Hec code fd
+mdadm -C /dev/md1 -a yes -l 5 -n 3 /dev/sda11 /dev/sd12 /dev/sd13
+mkfs.ext3 /dev/md1
+fsck -f /dev/md1
+mdadm /dev/md0 -f /dev/sda13
+mdadm /dev/md0 -r /dev/sda13
+mdadm /dev/md0 -a /dev/sda14
